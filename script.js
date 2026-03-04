@@ -1,6 +1,16 @@
 let apps = JSON.parse(localStorage.getItem('tj_apps')) || [];
 let currentIcon = "";
 let currentScreens = [];
+// Гирифтани маълумот аз db.js ва илова кардани он ба массиви асосӣ
+let allApps = [...DATABASE]; 
+
+function renderApps() {
+    // Акнун allApps-ро истифода мебарем
+    allApps.forEach((app, idx) => {
+        // Коди намоиш...
+    });
+}
+
 
 // 1. Гузариш байни Табҳо
 function switchTab(tab, el) {
