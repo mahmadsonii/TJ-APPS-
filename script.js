@@ -213,23 +213,31 @@ function saveEdit() {
 
 
 // 7. Кушодани Тафсилот (Details)
-function openDetails(idx) {
-    const app = apps[idx];
+    function openDetails(idx) {
+    const app = allApps[idx];
     const modal = document.getElementById('appModal');
     const content = document.getElementById('modal-data');
 
-    let screensHtml = "";
-    if (app.screens && app.screens.length > 0) {
-        screensHtml = `<div class="scr-slider">${app.screens.map(s => `<img src="${s}" class="scr-img">`).join('')}</div>`;
+    // ШАРТ: Агар линки видео дар db.js бошад, плеерро месозад
+    let videoHtml = "";
+    if (app.video && app.video.trim() !== "") {
+        videoHtml = `
+            <div class="video-container" style="margin-bottom:20px; border-radius:12px; overflow:hidden; background:#000;">
+                <iframe 
+                    src="${app.video}" 
+                    width="100%" 
+                    height="600" 
+                    frameborder="0" 
+                    allow="autoplay; fullscreen" 
+                    allowfullscreen="true">
+                </iframe>
+            </div>
+        `;
     }
-let videoHtml = "";
-if (app.video) {
-    videoHtml = `
-        <div class="video-container">
-            <iframe src="${app.video}" width="100%" height="220" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-    `;
-}
+
+    // Скриншотҳо
+    let screensHtml = (app.screens && app.screens.length > 0) ? 
+        `<div class="scr-slider">${app.screens.map(s => `<img src="${s}" class="scr-img">`).join('')}</div>` : "";
 
     content.innerHTML = `
         <button class="btn-close-modal" onclick="closeModal('appModal')">←</button>
@@ -237,38 +245,24 @@ if (app.video) {
             <img src="${app.icon}" class="detail-icon">
             <div class="detail-info">
                 <h2>${app.name}</h2>
-                <p class="detail-cat">${app.cat || 'Барнома'}</p>
+                <p class="detail-cat" style="color:#01875f;">${app.cat || 'Барнома'}</p>
             </div>
         </div>
-        <button class="btn-main" onclick="window.open('${app.link}')">Установить</button>
+        
+        <button class="btn-main" onclick="window.open('${app.link}')" style="margin-bottom:20px;">Установить</button>
+        
+        ${videoHtml} 
         ${screensHtml}
-        <div class="detail-desc">
+
+        <div class="detail-desc" style="margin-top:20px;">
             <h3>Дар бораи барнома</h3>
-            <p>${app.desc || 'Маълумот нест...'}</p>
+            <p style="color:#9aa0a6;">${app.desc || 'Маълумот нест...'}</p>
         </div>
     `;
+    
     modal.style.display = 'block';
     history.pushState({ page: 'details' }, '');
-}
-
-// 8. Тугмаи Назад ва Модалҳо
-window.addEventListener('popstate', () => {
-    document.getElementById('appModal').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'none';
-});
-
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-    history.back();
-}
-
-function deleteApp(idx) {
-    if(confirm("Нест кунам?")) {
-        apps.splice(idx, 1);
-        localStorage.setItem('tj_apps', JSON.stringify(apps));
-        renderApps();
     }
-}
 
 function loginAdmin() {
     const pass = prompt("Рамз:");
